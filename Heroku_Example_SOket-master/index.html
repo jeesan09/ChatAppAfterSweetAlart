@@ -99,6 +99,54 @@ button{
     padding: 12px 0;
     width: 100%;
     border-radius: 0 0 2px 2px;
+
+}
+
+
+#bars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+/*     background: black; */
+}
+
+.bar {
+    background: #52467b;
+    bottom: 1px;
+    height: 3px;
+    width: 10px;
+    margin: 0px 4px;
+    border-radius: 5px;
+    animation: sound 0ms -600ms linear infinite alternate;
+}
+
+@keyframes sound {
+    0% {
+       opacity: .35;
+        height: 3px; 
+    }
+    100% {
+        opacity: 1;       
+        height: 70px;        
+    }
+}
+
+.bar:nth-child(1)  { left: 1px; animation-duration: 474ms; }
+.bar:nth-child(2)  { left: 10px; animation-duration: 433ms; }
+.bar:nth-child(3)  { left: 25px; animation-duration: 407ms; }
+.bar:nth-child(4)  { left: 48px; animation-duration: 458ms; }
+.bar:nth-child(5)  { left: 55px; animation-duration: 400ms; }
+.bar:nth-child(6)  { left: 65px; animation-duration: 427ms; }
+.bar:nth-child(7)  { left: 80px; animation-duration: 441ms; }
+.bar:nth-child(8)  { left: 95px; animation-duration: 419ms; }
+.bar:nth-child(9)  { left: 110px; animation-duration: 487ms; }
+.bar:nth-child(10) { left: 120px; animation-duration: 442ms; }
+
+#animation{
+
+  display: none;
+}
+
 }
 
 
@@ -111,11 +159,34 @@ button{
      
        <div id="microphpne" style="width: 100%; text-align: center;">
 
-         <label ><b>Microphone </b> </label>  <button id="microphpne_button" style="width: 400px; height: 50px;">Start</button>
+         <label ><b>Microphone </b> </label> 
+
+
+                   <div id="animation" style="position: absolute; height: 200px; text-align: center;  margin-left: 70%; ">
+                    <div id="bars" >
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </div>
+                           
+              </div> <button id="microphpne_button" style="width: 400px; height: 50px;">Start</button>
+
+
          
        </div>
+    
 
-        <div id="mario-chat">
+              
+
+
+        <div id="mario-chat" >
             <h2>My Chat App</h2>
             <div id="chat-window">
                 <div id="output"></div>
@@ -189,8 +260,8 @@ if(isITChrome.isChrome==true){
             type: 'info',
             showCloseButton: true,
             html:
-              'Please press the <b style=" font-size: 22px; color: #2B77C0; padding: 5px;">start</b> button to activate your  <b style=" padding: 5px;">microphpnoe</b>' +
-              'and start  <b style=" font-size: 20px; color: #2B77C0; padding: 2px;">speaking</b>.<br/> <br/> No need to prees <b style=" font-size: 22px; color: #2B77C0; padding: 5px;">send </b> button to send massege if u start ur <b> microphpone </b>.',
+              'If you can speak Please press the <b style=" font-size: 22px; color: #2B77C0; padding: 5px;">start</b> button to activate your  <b style=" padding: 5px;">microphpnoe</b>' +
+              'and start  <b style=" font-size: 20px; color: #2B77C0; padding: 2px;">speaking</b>.',
             
             focusConfirm: true,
             confirmButtonText:
@@ -246,6 +317,8 @@ MicButton.addEventListener('click', function(){
        console.log('Speech recognition stopped.');
        MicButton.innerHTML="Start";
        MicActivator=false;
+       $("#send").show();
+       $("#animation").hide();
        console.log(MicActivator);
 
    }
@@ -265,6 +338,9 @@ MicButton.addEventListener('click', function(){
  
       MicButton.innerHTML="Off";
       MicActivator=true;
+
+      $("#send").hide();
+      $("#animation").show();
       console.log(MicActivator);
    }
 
