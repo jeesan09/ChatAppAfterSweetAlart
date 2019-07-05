@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>its working</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js" ></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<style type="text/css">
+  body{
+    font-family: 'Nunito';
+}
+
+h2{
+    font-size: 18px;
+    padding: 10px 20px;
+    color: #575ed8;
+}
+
+#mario-chat{
+    max-width: 940px;
+    margin: 30px auto;
+    border: 1px solid #ddd;
+    box-shadow: 1px 3px 5px rgba(0,0,0,0.05);
+    border-radius: 2px;
+}
+
+#chat-window{
+ 
+
+    overflow: auto;
+    background: #f9f9f9;
+    height:600px;
+  
+    direction:rtl;
+    transform: rotate(180deg); 
+   
+}
+
+#mario-chat p{
+    padding: 14px 0px;
+    margin: 0 20px;
+    border-bottom: 1px solid #e9e9e9;
+    color: black;
+
+
+
+    direction:ltr;
+    transform: rotate(180deg);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    margin-top: 25px;
+    background-color: #e8e8e8;
+
+
+    font-family: "Times New Roman", Times, serif;
+    box-sizing: border-box;
+    display: block;
+    padding: 10px 20px;
+}
+
+#feedback p{
+    color: #aaa;
+    padding: 14px 0px;
+    margin: 0 20px;
+    padding: 10px;
+
+
+
+}
+
+#mario-chat strong{
+    color: #575ed8;
+}
+
+label{
+    box-sizing: border-box;
+    display: block;
+    padding: 10px 20px;
+}
+
+input{
+    padding: 10px 20px;
+    box-sizing: border-box;
+    background: #eee;
+    border: 0;
+    display: block;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    font-family: Nunito;
+    font-size: 16px;
+}
+
+button{
+    background: #575ED8;
+    color: #fff;
+    font-size: 18px;
+    border: 0;
+    padding: 12px 0;
+    width: 100%;
+    border-radius: 0 0 2px 2px;
+}
+
+
+</style>
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+
+
+     
+       <div id="microphpne" style="width: 100%; text-align: center;">
+
+         <label ><b>Microphone </b> </label>  <button id="microphpne_button" style="width: 400px; height: 50px;">Start</button>
+         
+       </div>
+
+        <div id="mario-chat">
+            <h2>My Chat App</h2>
+            <div id="chat-window">
+                <div id="output"></div>
+                <div id="feedback">
+                      <div class="words" contenteditable></div>
+                </div>
+            </div>
+            <input id="handle" type="text" placeholder="Username" />
+            <input id="message" type="text" placeholder="Message" />
+            <button id="send">Send</button>
+        </div>
+
+</body>
+
+ <script >
+
+
+
+   
+var socket =io.connect('https://ancient-island-91419.herokuapp.com');
+
+
+//Dom Traavrsel
+var message = document.getElementById('message'),
+      handle = document.getElementById('handle'),
+      btn = document.getElementById('send'),
+      output = document.getElementById('output');
+      feedback = document.getElementById('feedback');
+      chatWin=document.getElementById('chat-window');
+      MicButton=document.getElementById('microphpne_button');
+
+  
+var MicActivator=false;
+
+ var node = document.createElement("p");  
+ var node2 = document.createElement("hr");  
+
+$(window).on('load', function() {
+ // code here
+
+function getMobileOperatingSystem() {
+  var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+      // Windows Phone must come first because its UA also contains "Android"
+    if (/windows phone/i.test(userAgent)) {
+        return "Windows Phone";
+    }
+
+    if (/android/i.test(userAgent)) {
+        return "Android";
+    }
+
+    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return "iOS";
+    }
+
+    return "unknown";
+}
+
+var isITChrome={isChrome: /Google Inc/.test(navigator.vendor)};
+console.log(getMobileOperatingSystem());
+
+
+if(isITChrome.isChrome==true){
+
+
+
+          Swal.fire({
+            position: '',
+            type: 'info',
+            showCloseButton: true,
+            html:
+              'Please press the <b style=" font-size: 22px; color: #2B77C0; padding: 5px;">start</b> button to activate your  <b style=" padding: 5px;">microphpnoe</b>' +
+              'and start  <b style=" font-size: 20px; color: #2B77C0; padding: 2px;">speaking</b>.<br/> <br/> No need to prees <b style=" font-size: 22px; color: #2B77C0; padding: 5px;">send </b> button to send massege if u start ur <b> microphpone </b>.',
+            
+            focusConfirm: true,
+            confirmButtonText:
+              '<i class="fa fa-thumbs-up"></i> Great!',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+          })
+
+
+
+
+}
+
+  else if  (isITChrome.isChrome==false || getMobileOperatingSystem()== 'iOS'){
+
+
+              Swal.fire({
+                type: 'error',
+                title: 'Oops...',
+                text: 'This chat massenger  works in Windws and Android version of Chrome only',
+                
+              })
+
+
+ }
+
+
+
+});
+
+ 
+
+//Microphone On Off
+MicButton.addEventListener('click', function(){
+   console.log("clicked Mic Button");
+
+   if(MicActivator==true  ){
+
+       recognition.stop();
+
+
+              Swal.fire({
+                position: 'top-end',
+                type: 'success',
+                title: 'Your microphpone Stopped',
+                showConfirmButton: false,
+                timer: 1500
+              })
+          
+
+  
+
+       
+       console.log('Speech recognition stopped.');
+       MicButton.innerHTML="Start";
+       MicActivator=false;
+       console.log(MicActivator);
+
+   }
+
+
+   else{
+
+      recognition.start();
+
+             Swal.fire({
+                position: 'top-end',
+                type: 'success',
+                title: 'Your microphpone started',
+                showConfirmButton: false,
+                timer: 1500
+              })
+ 
+      MicButton.innerHTML="Off";
+      MicActivator=true;
+      console.log(MicActivator);
+   }
+
+});
+
+
+//speech recognization
+
+ 
+
+
+
+
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 2;
+  recognition.lang = 'en-US';
+
+
+
+
+  
+  let p = document.createElement('p');
+  const words = document.querySelector('.words');
+  // words.appendChild(p);
+
+  //  $(".words").prepend(p);
+  
+   //chatWin.insertBefore(p, chatWin.firstChild);
+
+
+
+
+
+
+
+  recognition.addEventListener('result', e => {
+    const transcript = Array.from(e.results)
+      .map(result => result[0])
+      .map(result => result.transcript)
+      .join('');
+     
+    
+      if (e.results[0].isFinal) {
+       
+
+   socket.emit('chat', {
+
+      message:transcript,
+      handle: handle.value
+  });
+
+ }
+
+  });
+
+
+
+recognition.addEventListener('end', function(){
+ 
+
+
+
+
+if(MicActivator==true){
+
+ 
+  recognition.start();
+
+  console.log(MicActivator);
+
+}
+
+
+if(MicActivator==false){
+
+ 
+  recognition.stop();
+
+  console.log(MicActivator);
+
+}
+
+
+});
+
+
+/*
+recognition.addEventListener('end', recognition.start);
+
+if(MicActivator==true){
+
+ 
+  recognition.start();
+
+  console.log(MicActivator);
+
+}
+*/
+// Send Button Emit events 
+
+
+btn.addEventListener('click', function(){
+  socket.emit('chat', {
+      message: message.value,
+      handle: handle.value
+  });
+  message.value = "";
+});
+
+
+
+//enter button
+
+addEventListener('keyup',function(e){
+    if (e.keyCode === 13) {
+
+
+        socket.emit('chat', {
+            message: message.value,
+            handle: handle.value
+        });
+        message.value = "";
+
+    
+  }  
+});
+//listening for typing keypress event
+message.addEventListener('keypress', function(){
+
+  if(message.value!=''){
+
+    socket.emit('typing', handle.value);
+  }
+    else{
+      feedback.innerHTML = '';
+    }
+});
+
+/*
+//listening for typing keyup event
+message.addEventListener('keydown',typing_quit );
+
+
+*/
+// Listen for events
+socket.on('chat', function(data){
+  
+  // event.preventDefault();
+
+
+  if(data.handle==''){
+
+
+    data.handle='speaker';
+
+
+  }
+
+
+
+
+  console.log("functon called");
+  feedback.innerHTML = '';
+   //output.innerHTML+= '<p><strong>' + data.handle + ': </strong>' + data.message + '</p>';
+   var textnode1 = document.createTextNode(  data.handle + '   :    '  );
+    var textnode2 = document.createTextNode(   data.message );
+   //textnode[1].style.color = 'red';
+  // textnode.innerHTML='<p><strong>' + data.handle + ': </strong>' + data.message + '</p>';
+
+  var x = document.createElement("STRONG");
+  x.appendChild(textnode1);
+
+
+  node.appendChild(x);
+  node.appendChild(textnode2);
+
+
+  var hr = document.createElement("hr");
+  node.appendChild(hr);
+
+
+  var br = document.createElement("br");
+  node.appendChild(br);
+
+ //  node.appendChild(node2);
+  document.getElementById("chat-window").appendChild(node);
+  // document.getElementById("chat-window").appendChild(node2);
+  //chatWin.insertBefore(output, chatWin.firstChild)
+  // output.prependTo('.chat-window');
+ //$output.innerHTML('<div style="background-color:#fff;><strong style="color:#000">'+data.handle+'</strong>: '+data.message+'</div>');
+
+ //chatWin.insertBefore( chatWin.lastChild);
+
+// output.insertBefore(chatWin, output.childNodes[0]);
+
+});      
+
+
+socket.on('typing', function(data){
+
+  
+  
+                   
+   feedback.innerHTML = '<p><em>' + data + '  typing a message...</em></p>'; 
+
+  
+   
+});
+
+
+
+
+
+
+
+ </script>
+</html>
