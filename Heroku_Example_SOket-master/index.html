@@ -161,7 +161,7 @@ button{
 
          <label ><b>Microphone </b> </label> 
 
-
+<!--  this is the animaton part -->
                    <div id="animation" style="position: absolute; height: 200px; text-align: center;  margin-left: 70%; ">
                     <div id="bars" >
                       <div class="bar"></div>
@@ -175,7 +175,7 @@ button{
                       <div class="bar"></div>
                       <div class="bar"></div>
                     </div>
-                           
+<!--  this is the animaton part -->                           
               </div> <button id="microphpne_button" style="width: 400px; height: 50px;">Start</button>
 
 
@@ -224,6 +224,8 @@ var MicActivator=false;
  var node = document.createElement("p");  
  var node2 = document.createElement("hr");  
 
+
+/*this is for sweet alart and operating system cheak*/
 $(window).on('load', function() {
  // code here
 
@@ -246,9 +248,14 @@ function getMobileOperatingSystem() {
 
     return "unknown";
 }
-
-var isITChrome={isChrome: /Google Inc/.test(navigator.vendor)};
 console.log(getMobileOperatingSystem());
+
+/*this is for sweet alart*/
+
+
+
+var isITChrome={isChrome: /Google Inc/.test(navigator.vendor)}; /*this is for  Chrome or ther broser cheak*/
+
 
 
 if(isITChrome.isChrome==true){
